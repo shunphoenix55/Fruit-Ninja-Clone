@@ -7,6 +7,7 @@ public class SwipeDetection : MonoBehaviour
     [SerializeField] private float maximumTime = 1f;
     [SerializeField, Range(0, 1)] private float directionThreshold = .9f;
     [SerializeField] private GameObject trail;
+    [SerializeField] private float hitboxRadius = 0.1f;
 
     private Coroutine coroutine;
 
@@ -16,6 +17,7 @@ public class SwipeDetection : MonoBehaviour
     private float startTime;   
     private Vector2 endPosition;
     private float endTime;
+    private Vector2 prevFramePos;
 
     private void Awake()
     {
@@ -26,12 +28,14 @@ public class SwipeDetection : MonoBehaviour
     {
         inputManager.OnStartTouch += SwipeStart;
         inputManager.OnEndTouch += SwipeEnd;
+        inputManager.OnTouchMove += SwipeMove;
     }    
     
     private void OnDisable()
     {
         inputManager.OnStartTouch -= SwipeStart;
         inputManager.OnEndTouch -= SwipeEnd;
+        inputManager.OnTouchMove -= SwipeMove;
     }
 
     private void SwipeStart(Vector2 position, float time)
@@ -52,6 +56,51 @@ public class SwipeDetection : MonoBehaviour
             trail.transform.position = inputManager.PrimaryPosition();
             yield return null;
         }
+    }
+
+    //private IEnumerator SwipeBetween()
+    //{
+    //    while (true)
+    //    {
+    //        if (inputManager.PrimaryDelta().magnitude >= minimumDistance)
+    //        {
+    //            Vector2 currentPosition = inputManager.PrimaryPosition();
+    //            Debug.DrawLine(prevFramePos, currentPosition, Color.blue, 5f);
+    //        }
+
+    //        prevFramePos = inputManager.PrimaryPosition();
+    //        yield return null;
+    //    }
+    //}
+
+    public void SwipeMove(Vector2 position, float time)
+    {
+        if (inputManager.PrimaryDelta().magnitude >= minimumDistance)
+        {
+            Vector2 currentPosition = inputManager.PrimaryPosition();
+            Debug.DrawLine(prevFramePos, currentPosition, Color.blue, 5f);
+
+            Vector3 sphereStart = new Vector3(prevFramePos.x, prevFramePos.y, 0);
+            Vector3 sphereDirection = new Vector3(currentPosition.x - prevFramePos.x, currentPosition.y - prevFramePos.y, 0);
+
+            RaycastHit[] hits = Physics.SphereCastAll(sphereStart, hitboxRadius, sphereDirection, .5f);
+            foreach (RaycastHit hit in hits)
+            {
+                hit.transform.gameObject.SetActive(false);
+                Debug.Log(hit.transform.gameObject);
+            }
+            if (hits != null)
+            {
+                Debug.Log("Hit something");
+            }
+            else
+            {
+                Debug.Log("No hits");
+            }
+
+        }
+
+        prevFramePos = inputManager.PrimaryPosition();
     }
 
     private void SwipeEnd(Vector2 position, float time)

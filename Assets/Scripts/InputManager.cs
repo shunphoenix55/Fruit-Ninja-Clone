@@ -8,9 +8,11 @@ public class InputManager : Singleton<InputManager>
 {
     #region Events
     public delegate void StartTouch(Vector2 position, float time);
-    public event StartTouch OnStartTouch;    
+    public event StartTouch OnStartTouch;
     public delegate void EndTouch(Vector2 position, float time);
     public event StartTouch OnEndTouch;
+    public delegate void TouchMove(Vector2 position, float time);
+    public event TouchMove OnTouchMove;
 
     #endregion
 
@@ -37,6 +39,16 @@ public class InputManager : Singleton<InputManager>
     {
         playerControls.Touch.PrimaryContact.started += ctx => StartTouchPrimary(ctx);
         playerControls.Touch.PrimaryContact.canceled += ctx => EndTouchPrimary(ctx);
+        playerControls.Touch.PrimaryDelta.performed += ctx => DetectTouchMove(ctx);
+    }
+
+    private void DetectTouchMove(InputAction.CallbackContext context)
+    {
+        Debug.Log(playerControls.Touch.PrimaryDelta.ReadValue<Vector2>());
+        if (OnTouchMove != null)
+        {
+            OnTouchMove(playerControls.Touch.PrimaryDelta.ReadValue<Vector2>(), (float)context.time);
+        }
     }
 
     private void StartTouchPrimary(InputAction.CallbackContext context)
@@ -58,7 +70,14 @@ public class InputManager : Singleton<InputManager>
     public Vector2 PrimaryPosition()
     {
         return Utils.ScreenToWorld(mainCamera, playerControls.Touch.PrimaryPosition.ReadValue<Vector2>());
+     
     }    
+
+    public Vector2 PrimaryDelta()
+
+    {
+        return Utils.ScreenToWorld(mainCamera, playerControls.Touch.PrimaryDelta.ReadValue<Vector2>());
+    }
 
 
 }
