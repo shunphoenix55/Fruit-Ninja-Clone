@@ -43,8 +43,9 @@ public class SwipeDetection : MonoBehaviour
         startPosition = position;
         startTime = time;
 
-        trail.SetActive(true);
         trail.transform.position = position;
+        trail.SetActive(true);
+        prevFramePos = position;
 
         coroutine =  StartCoroutine(Trail());
     }
@@ -86,17 +87,21 @@ public class SwipeDetection : MonoBehaviour
             RaycastHit[] hits = Physics.SphereCastAll(sphereStart, hitboxRadius, sphereDirection, .5f);
             foreach (RaycastHit hit in hits)
             {
-                hit.transform.gameObject.SetActive(false);
-                Debug.Log(hit.transform.gameObject);
+                GameObject hitObject = hit.transform.gameObject;
+                if (hitObject.CompareTag("Fruit"))
+                {
+                Debug.Log(hitObject);
+                Destroy(hitObject);
+                }
             }
-            if (hits != null)
-            {
-                Debug.Log("Hit something");
-            }
-            else
-            {
-                Debug.Log("No hits");
-            }
+            //if (hits != null)
+            //{
+            //    Debug.Log("Hit something");
+            //}
+            //else
+            //{
+            //    Debug.Log("No hits");
+            //}
 
         }
 
