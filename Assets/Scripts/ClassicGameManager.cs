@@ -146,6 +146,8 @@ public class ClassicGameManager : MonoBehaviour
 
     IEnumerator SpawnWave()
     {
+        yield return StartCoroutine(InitialWave());
+
         while (true)
         {
             float random = Random.Range(0f, 2f);
@@ -153,10 +155,39 @@ public class ClassicGameManager : MonoBehaviour
             if (random <= 1f)
                 yield return StartCoroutine(LineWave());
             else if (random <= 2f)
-            yield return StartCoroutine(ContinuousWave());
+                yield return StartCoroutine(ContinuousWave());
 
             yield return new WaitForSeconds(waveInterval);
         }
+    }
+
+    IEnumerator InitialWave()
+    {
+        yield return new WaitForSeconds(1f);
+        SpawnObject(1);
+        yield return new WaitForSeconds(waveInterval);
+        SpawnObject(1);
+        yield return new WaitForSeconds(waveInterval);
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                SpawnObject(1);
+            }
+            yield return new WaitForSeconds(waveInterval);
+        }
+     
+        for (int i = 0; i < 2; i++)
+        {
+            SpawnObject(2);
+        }
+        yield return new WaitForSeconds(waveInterval);
+        yield return StartCoroutine(ContinuousWave());
+        yield return new WaitForSeconds(waveInterval);
+        yield return StartCoroutine(LineWave());
+        yield return new WaitForSeconds(waveInterval);
+
+        yield return null;
     }
 
     IEnumerator LineWave()
@@ -178,10 +209,27 @@ public class ClassicGameManager : MonoBehaviour
         yield return null;
     }
 
-    public void SpawnObject()
+    public void SpawnObject(int objectType = 0)
     {
         float spawnX = Random.Range(spawnBounds[0].position.x, spawnBounds[1].position.x);
-        GameObject fruitObject = RandomObjectSelector.Instance.GetRandomObject();
+        GameObject fruitObject;
+
+        switch (objectType)
+        {
+            case 0:
+            fruitObject = RandomObjectSelector.Instance.GetRandomObject();
+                break;
+            case 1:
+                fruitObject = RandomObjectSelector.Instance.GetRandomFruit();
+                break;
+            case 2:
+                fruitObject = RandomObjectSelector.Instance.GetBomb();
+                break;
+
+            default:
+                fruitObject = RandomObjectSelector.Instance.GetRandomObject();
+                break;
+        }
         GameObject fruit = ObjectPooler.SharedInstance.GetPooledObject(fruitObject.name);
         fruit.SetActive(true);
         fruit.transform.position = new Vector3(spawnX, spawnBounds[0].position.y, spawnBounds[0].position.z);
