@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Fruit : MonoBehaviour
 {
     public int score = 1;
@@ -11,9 +12,14 @@ public class Fruit : MonoBehaviour
     {
         gameManager = ClassicGameManager.Instance;
     }
-    public void OnDestroy()
+
+    public void OnDisable()
     {
+        if (gameManager != null)
+        {
         gameManager.UpdateScore(score);
         gameManager.UpdateCombo();
+
+        }
     }
 }

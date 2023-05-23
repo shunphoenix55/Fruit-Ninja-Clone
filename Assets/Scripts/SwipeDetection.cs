@@ -90,8 +90,7 @@ public class SwipeDetection : MonoBehaviour
                 GameObject hitObject = hit.transform.gameObject;
                 if (hitObject.CompareTag("Fruit"))
                 {
-                Debug.Log(hitObject);
-                Destroy(hitObject);
+                    hitObject.SetActive(false);
                 }
             }
             //if (hits != null)
@@ -115,38 +114,38 @@ public class SwipeDetection : MonoBehaviour
         endPosition = position;
         endTime = time;
 
-        DetectSwipe();
+        //DetectSwipe();
     }
 
-    public void DetectSwipe()
-    {
-        if (Vector3.Distance(startPosition, endPosition) >= minimumDistance && 
-            (endTime - startTime) <= maximumTime)
-        {
-            Debug.DrawLine(startPosition, endPosition, Color.red, 5f);
-            Vector3 direction = endPosition - startPosition;
-            Vector2 direction2D = new Vector2(direction.x, direction.y).normalized;
-            SwipeDirection(direction2D);
-        }
-    }
+    //public void DetectSwipe()
+    //{
+    //    if (Vector3.Distance(startPosition, endPosition) >= minimumDistance && 
+    //        (endTime - startTime) <= maximumTime)
+    //    {
+    //        Debug.DrawLine(startPosition, endPosition, Color.red, 5f);
+    //        Vector3 direction = endPosition - startPosition;
+    //        Vector2 direction2D = new Vector2(direction.x, direction.y).normalized;
+    //        SwipeDirection(direction2D);
+    //    }
+    //}
 
-    private void SwipeDirection(Vector2 direction)
-    {
-        if (Vector2.Dot(Vector2.up, direction) > directionThreshold)
-        {
-            Debug.Log("Swiped up");
-        }        
-        else if (Vector2.Dot(Vector2.down, direction) > directionThreshold)
-        {
-            Debug.Log("Swiped down");
-        }        
-        else if (Vector2.Dot(Vector2.right, direction) > directionThreshold)
-        {
-            Debug.Log("Swiped right");
-        }        
-        else if (Vector2.Dot(Vector2.left, direction) > directionThreshold)
-        {
-            Debug.Log("Swiped left");
-        }        
-    }
+    //private void SwipeDirection(Vector2 direction)
+    //{
+    //    if (Vector2.Dot(Vector2.up, direction) > directionThreshold)
+    //    {
+    //        Debug.Log("Swiped up");
+    //    }        
+    //    else if (Vector2.Dot(Vector2.down, direction) > directionThreshold)
+    //    {
+    //        Debug.Log("Swiped down");
+    //    }        
+    //    else if (Vector2.Dot(Vector2.right, direction) > directionThreshold)
+    //    {
+    //        Debug.Log("Swiped right");
+    //    }        
+    //    else if (Vector2.Dot(Vector2.left, direction) > directionThreshold)
+    //    {
+    //        Debug.Log("Swiped left");
+    //    }        
+    //}
 }

@@ -44,7 +44,7 @@ public class InputManager : Singleton<InputManager>
 
     private void DetectTouchMove(InputAction.CallbackContext context)
     {
-        Debug.Log(playerControls.Touch.PrimaryDelta.ReadValue<Vector2>());
+        //Debug.Log(playerControls.Touch.PrimaryDelta.ReadValue<Vector2>());
         if (OnTouchMove != null)
         {
             OnTouchMove(playerControls.Touch.PrimaryDelta.ReadValue<Vector2>(), (float)context.time);
