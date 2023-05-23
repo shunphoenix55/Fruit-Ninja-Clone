@@ -8,18 +8,23 @@ using TMPro;
 public class ClassicGameManager : MonoBehaviour
 {
     public TMP_Text scoreText;
+    public TMP_Text comboText;
     public TMP_Text missesText;
+    public TMP_Text gameOverText;
 
     public float maxComboInterval = 1f;
 
     [Header("Fruits")]
-    public GameObject fruitObject;
+    //public GameObject fruitObject;
 
     public float minYVelocity = 5f; 
     public float maxYVelocity = 10f;
 
     public float minXVelocity = 0.5f;
     public float maxXVelocity = 2f;
+
+    public float minAngularVelocity = 5f;
+    public float maxAngularVelocity = 10f;
 
     [Header("Wave")]
     public float waveInterval = 1f;
@@ -56,7 +61,8 @@ public class ClassicGameManager : MonoBehaviour
             }
             else if (value >= 3)
             {
-                Time.timeScale = 0;
+                _misses = 3;
+                EndGame();
             }
             else
             {
@@ -120,15 +126,23 @@ public class ClassicGameManager : MonoBehaviour
 
     }
 
+
     public void FinishCombo()
     {
         if (comboCounter >= 3)
         {
             UpdateScore(comboCounter);
+            comboText.text = "+ " +  comboCounter.ToString();
         }
         comboCounter = 0;
         comboTimer = 0f;
     }
+    public void EndGame()
+    {         Time.timeScale = 0;
+        gameOverText.gameObject.SetActive(true);
+        ObjectPooler.SharedInstance.parentObject.SetActive(false);
+
+       }
 
     IEnumerator SpawnWave()
     {
@@ -149,7 +163,7 @@ public class ClassicGameManager : MonoBehaviour
     {
         for (int i = 0; i < (int)Random.Range(lineWaveCountMin, lineWaveCountMax); i++)
         {
-            SpawnFruit();
+            SpawnObject();
         } 
         yield return null;
     }
@@ -158,31 +172,45 @@ public class ClassicGameManager : MonoBehaviour
     {
         for (int i = 0; i < (int)Random.Range(continuousWaveCountMin, continuousWaveCountMax); i++)
         {
-            SpawnFruit();
+            SpawnObject();
             yield return new WaitForSeconds(1f);
         }
         yield return null;
     }
 
-    public void SpawnFruit()
+    public void SpawnObject()
     {
         float spawnX = Random.Range(spawnBounds[0].position.x, spawnBounds[1].position.x);
+        GameObject fruitObject = RandomObjectSelector.Instance.GetRandomObject();
         GameObject fruit = ObjectPooler.SharedInstance.GetPooledObject(fruitObject.name);
         fruit.SetActive(true);
         fruit.transform.position = new Vector3(spawnX, spawnBounds[0].position.y, spawnBounds[0].position.z);
         Rigidbody fruitRB = fruit.GetComponent<Rigidbody>();
 
-        float fruitXVelocity = Random.Range(maxXVelocity, maxXVelocity);
+        float fruitXVelocity = Random.Range(minXVelocity, maxXVelocity);
         float fruitYVelocity = Random.Range(minYVelocity, maxYVelocity);
 
-        Vector3 fruitVelocity = new(maxXVelocity, maxYVelocity, 0);
+        float fruitAngularVelocity = Random.Range(minAngularVelocity, maxAngularVelocity);
+
+
+        if (spawnX > (spawnBounds[0].position.x + spawnBounds[1].position.x)/2)
+        {
+            fruitXVelocity *= -1f;
+        }
+
+        Vector3 fruitVelocity = new(fruitXVelocity, fruitYVelocity, 0.2f);
         fruitRB.velocity = fruitVelocity;
+        fruitRB.angularVelocity = new Vector3(fruitAngularVelocity, fruitAngularVelocity, fruitAngularVelocity);
+
     }
 
     public void DestroyOutOfBounds(GameObject gameObject)
     {
         gameObject.SetActive(false);
-        Misses += 1;
+        if (gameObject.CompareTag("Fruit"))
+        {
+            Misses += 1;
+        }
         missesText.text = Misses.ToString();
     }
     

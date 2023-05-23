@@ -88,8 +88,10 @@ public class SwipeDetection : MonoBehaviour
             foreach (RaycastHit hit in hits)
             {
                 GameObject hitObject = hit.transform.gameObject;
-                if (hitObject.CompareTag("Fruit"))
+                if (hitObject.CompareTag("Fruit") || hitObject.CompareTag("Bomb"))
                 {
+                    SliceableObject sliceable = hitObject.GetComponent<SliceableObject>();
+                    sliceable.OnSlice();
                     hitObject.SetActive(false);
                 }
             }

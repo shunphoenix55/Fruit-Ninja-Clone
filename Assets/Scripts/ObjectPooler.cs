@@ -19,6 +19,8 @@ public class ObjectPooler : MonoBehaviour
 {
     public static ObjectPooler SharedInstance;
 
+    public GameObject parentObject;
+
     [SerializeField] List<ObjectPoolItem> objectPoolItems;
 
 
@@ -40,7 +42,7 @@ public class ObjectPooler : MonoBehaviour
             item.pooledObjects = new List<GameObject>();
             for (int i = 0; i < item.amountToPool; i++)
             {
-                GameObject obj = Instantiate(item.prefab);
+                GameObject obj = Instantiate(item.prefab, parentObject.transform);
                 obj.SetActive(false);
                 item.pooledObjects.Add(obj);
             }

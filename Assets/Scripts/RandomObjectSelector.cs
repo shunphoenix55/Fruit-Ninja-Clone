@@ -9,12 +9,20 @@ public class WeightedObject
     public float weight = 1f;
 }
 
+[DefaultExecutionOrder(-1)]
 public class RandomObjectSelector : MonoBehaviour
 {
+    public static RandomObjectSelector Instance;
+
     public WeightedObject bomb;
     public List<WeightedObject> fruits;
 
     float totalWeight = 0;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {

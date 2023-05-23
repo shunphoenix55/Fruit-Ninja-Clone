@@ -2,24 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-public class Fruit : MonoBehaviour
+
+public class Fruit : SliceableObject
 {
-    public int score = 1;
-
-    private ClassicGameManager gameManager;
-    private void Start()
+    public override void OnSlice()
     {
-        gameManager = ClassicGameManager.Instance;
-    }
-
-    public void OnDisable()
-    {
-        if (gameManager != null)
-        {
         gameManager.UpdateScore(score);
-        gameManager.UpdateCombo();
-
-        }
     }
 }
+
